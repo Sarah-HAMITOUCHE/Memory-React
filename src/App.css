@@ -40,3 +40,46 @@
 .read-the-docs {
   color: #888;
 }
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 70px);
+  grid-gap: 16px;
+  justify-content: center;
+  margin: 2em auto;
+}
+.memory-card {
+  width: 70px;
+  height: 70px;
+  font-size: 2.2em;
+  background: #333;
+  color: #fff;
+  border: 2px solid #646cff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.memory-card.flipped {
+  background: #fff;
+  color: #333;
+  cursor: default;
+}
+.win-message {
+  margin: 1.5em 0;
+  font-size: 1.5em;
+  color: #4caf50;
+}
+.restart-btn {
+  margin-top: 1em;
+  background: #f9f9f9;
+  color: #213547;
+  border: 1px solid #646cff;
+  border-radius: 8px;
+  padding: 0.5em 1.2em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.restart-btn:hover {
+  border-color: #747bff;
+}
