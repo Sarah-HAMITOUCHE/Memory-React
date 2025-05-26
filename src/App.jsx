@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 
 const EMOJIS = ['🐶','🐱','🦊','🐻','🐼','🐵','🦁','🐸']
@@ -16,8 +16,29 @@ function App() {
   const [flipped, setFlipped] = useState([])
   const [lock, setLock] = useState(false)
   const [won, setWon] = useState(false)
+  const [score, setScore] = useState(0)
+  const [timer, setTimer] = useState(0)
+  const [started, setStarted] = useState(false)
+  const timerRef = useRef(null)
+
+  // Timer effect
+  useEffect(() => {
+    if (started && !won) {
+      timerRef.current = setInterval(() => setTimer(t => t + 1), 1000)
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current)
+    }
+    return () => clearInterval(timerRef.current)
+  }, [started, won])
+
+  // Reset timer on restart
+  useEffect(() => {
+    setTimer(0)
+    setStarted(false)
+  }, [cards])
 
   const handleFlip = (idx) => {
+    if (!started) setStarted(true)
     if (lock || cards[idx].flipped || cards[idx].matched) return
     const newFlipped = [...flipped, idx]
     const newCards = cards.map((card, i) => i === idx ? { ...card, flipped: true } : card)
@@ -25,6 +46,7 @@ function App() {
     setFlipped(newFlipped)
     if (newFlipped.length === 2) {
       setLock(true)
+      setScore(s => s + 1)
       setTimeout(() => {
         const [i1, i2] = newFlipped
         if (newCards[i1].emoji === newCards[i2].emoji) {
@@ -45,12 +67,18 @@ function App() {
     setFlipped([])
     setLock(false)
     setWon(false)
+    setScore(0)
+    setTimer(0)
   }
 
   return (
     <div>
-      <h1>Memory Game 🧠</h1>
-      <div className="memory-grid">
+      <h1>🃏 Memory Party: Emoji Flip! 🎉</h1>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '2em', marginBottom: '1em' }}>
+        <div style={{ fontWeight: 'bold', color: '#a259ff', fontSize: '1.2em' }}>Score: {score}</div>
+        <div style={{ fontWeight: 'bold', color: '#a259ff', fontSize: '1.2em' }}>⏱️ Temps: {timer}s</div>
+      </div>
+      <div className="memory-grid" style={{ display: 'grid', justifyContent: 'center' }}>
         {cards.map((card, idx) => (
           <button
             key={card.id}
@@ -62,7 +90,7 @@ function App() {
           </button>
         ))}
       </div>
-      {won && <div className="win-message">🎉 Bravo, tu as gagné ! <button onClick={handleRestart}>Rejouer</button></div>}
+      {won && <div className="win-message">🎉 Bravo, tu as gagné ! <br/>Score: {score} | Temps: {timer}s <br/><button onClick={handleRestart}>Rejouer</button></div>}
       {!won && <button className="restart-btn" onClick={handleRestart}>Recommencer</button>}
     </div>
   )
